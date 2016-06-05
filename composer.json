@@ -1,0 +1,24 @@
+{
+  "name": "caxy/svgtoolkit-module",
+  "description": "Allow SVG images to be used in image fields",
+  "type": "drupal-module",
+  "license": "GPL-2.0+",
+  "homepage": "https://www.drupal.org/project/svgtoolkit",
+  "minimum-stability": "dev",
+  "require": {
+    "composer/installers": "^1.0",
+    "phenx/php-svg-lib": "dev-master"
+  },
+  "authors": [
+    {
+      "name": "Benjamin Doherty",
+      "email": "bdoherty@caxy.com"
+    }
+  ],
+  "extra": {
+    "branch-alias": {
+      "dev-8.x-1.x": "8.1.x-dev"
+    },
+    "installer-name": "svgtoolkit"
+  }
+}

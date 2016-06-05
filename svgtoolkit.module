@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Contains svgtoolkit.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implement hook_field_widget_WIDGET_form_alter().
+ *
+ * Add svg to the list of permitted file extensions on image widgets.
+ *
+ * @param $element
+ * @param FormStateInterface $form_state
+ * @param $context
+ */
+function svgtoolkit_field_widget_image_image_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $extensions = $element['#upload_validators']['file_validate_extensions'][0];
+  $element['#upload_validators']['file_validate_extensions'][0] = $extensions .' svg';
+}
