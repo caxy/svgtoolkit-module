@@ -1,0 +1,5 @@
+services:
+  svgtoolkit.twig_extension:
+    class: Drupal\svgtoolkit\Template\TwigExtension
+    tags:
+      - { name: twig.extension }
