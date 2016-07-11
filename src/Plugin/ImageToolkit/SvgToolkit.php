@@ -97,8 +97,6 @@ class SvgToolkit extends PluginBase implements ImageToolkitInterface {
 
   public function save($destination) {
     if ($this->svg) {
-      $this->xml['height'] = $this->dimensions['height'] .'px';
-      $this->xml['width'] = $this->dimensions['width'] .'px';
       return $this->xml->asXML($destination);
     }
     else {
