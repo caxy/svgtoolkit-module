@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\svgtoolkit\Plugin\ImageToolkit;
+namespace Drupal\svgtoolkit;
 
 use Drupal\Component\Plugin\PluginBase;
 use Drupal\Component\Utility\Image;
@@ -8,72 +8,65 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\ImageToolkit\ImageToolkitInterface;
 use Drupal\system\Plugin\ImageToolkit\GDToolkit;
 use Svg\Document;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesserInterface;
 
-/**
- * Class SvgToolkit.
- *
- * @ImageToolkit(
- *   id = "svg_gd",
- *   title = @Translation("SVG+GD2 image manipulation toolkit")
- * )
- */
-class SvgToolkit extends PluginBase implements ImageToolkitInterface {
+class AbstractSvgToolkit extends PluginBase {
 
   /**
    * @var ImageToolkitInterface
    */
-  private $toolkit;
-
-  /**
-   * @var MimeTypeGuesserInterface
-   */
-  private $guesser;
-
+  protected $toolkit;
   /**
    * @var bool
    */
-  private $svg = FALSE;
-
-  /**
-   * @var Document
-   */
-  private $document;
-
+  protected $svg = FALSE;
   /**
    * @var \SimpleXMLElement
    */
-  private $xml;
-
+  protected $xml;
   /**
-   * @var array
+   * @var Document
    */
-  private $dimensions;
-
+  protected $document;
+  /**
+   * @var MimeTypeGuesserInterface
+   */
+  protected $guesser;
   /**
    * @var string
    */
-  private $source = '';
+  protected $source = '';
+  /**
+   * @var array
+   */
+  protected $dimensions;
 
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, ImageToolkitInterface $toolkit, MimeTypeGuesserInterface $guesser) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    array $plugin_definition,
+    ImageToolkitInterface $toolkit,
+    MimeTypeGuesserInterface $guesser
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
 
     $this->toolkit = $toolkit;
     $this->guesser = $guesser;
-}
+  }
 
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $toolkit = $container->get('image.toolkit.manager')->createInstance('gd');
-    /** @var MimeTypeGuesserInterface $guesser */
-    $guesser = $container->get('file.mime_type.guesser');
+  public static function isAvailable() {
+    return GDToolkit::isAvailable();
+  }
 
-    return new static($configuration, $plugin_id, $plugin_definition, $toolkit, $guesser);
+  public static function getSupportedExtensions() {
+    return array_merge(GDToolkit::getSupportedExtensions(), ['svg']);
   }
 
   public function setSource($source) {
     if ($this->source) {
-      throw new \BadMethodCallException(__METHOD__ . '() may only be called once');
+      throw new \BadMethodCallException(
+        __METHOD__ . '() may only be called once'
+      );
     }
 
     $this->source = $source;
@@ -125,30 +118,32 @@ class SvgToolkit extends PluginBase implements ImageToolkitInterface {
   }
 
   public function getHeight() {
-    return $this->svg ? round($this->document->getHeight()) : $this->toolkit->getHeight();
+    return $this->svg ? round(
+      $this->document->getHeight()
+    ) : $this->toolkit->getHeight();
   }
 
   public function getWidth() {
-    return $this->svg ? round($this->document->getWidth()) : $this->toolkit->getWidth();
+    return $this->svg ? round(
+      $this->document->getWidth()
+    ) : $this->toolkit->getWidth();
   }
 
   public function getMimeType() {
     return $this->svg ? 'image/svg+xml' : $this->toolkit->getMimeType();
   }
 
-  public static function isAvailable() {
-    return GDToolkit::isAvailable();
-  }
-
-  public static function getSupportedExtensions() {
-    return array_merge(GDToolkit::getSupportedExtensions(), ['svg']);
-  }
-
-  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+  public function buildConfigurationForm(
+    array $form,
+    FormStateInterface $form_state
+  ) {
     return $this->toolkit->buildConfigurationForm($form, $form_state);
   }
 
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(
+    array &$form,
+    FormStateInterface $form_state
+  ) {
     $this->toolkit->submitConfigurationForm($form, $form_state);
   }
 
@@ -160,7 +155,12 @@ class SvgToolkit extends PluginBase implements ImageToolkitInterface {
     if ($this->svg) {
       switch ($operation) {
         case 'scale':
-          Image::scaleDimensions($this->dimensions, $arguments['width'], $arguments['height'], $arguments['upscale']);
+          Image::scaleDimensions(
+            $this->dimensions,
+            $arguments['width'],
+            $arguments['height'],
+            $arguments['upscale']
+          );
       }
       return true;
     }
@@ -169,7 +169,10 @@ class SvgToolkit extends PluginBase implements ImageToolkitInterface {
     }
   }
 
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function validateConfigurationForm(
+    array &$form,
+    FormStateInterface $form_state
+  ) {
     $this->toolkit->validateConfigurationForm($form, $form_state);
   }
 }
