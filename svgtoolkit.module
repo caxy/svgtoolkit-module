@@ -25,3 +25,16 @@ function svgtoolkit_field_widget_form_alter(&$element, FormStateInterface $form_
     $element['#upload_validators']['file_validate_extensions'][0] = $extensions .' svg';
   }
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Add svg to the list of permitted file extensions on image uploads in editor.
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ */
+function svgtoolkit_form_editor_image_dialog_alter(&$form, FormStateInterface $form_state) {
+  $extensions = $form['fid']['#upload_validators']['file_validate_extensions'][0];
+  $form['fid']['#upload_validators']['file_validate_extensions'][0] = $extensions .' svg';
+}
